@@ -21,9 +21,9 @@ Open [http://localhost:3000](http://localhost:3000). Main routes:
 
 ## Supabase configuration
 
-Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` in `.env.local`. Never put a Supabase secret/service-role key in a `NEXT_PUBLIC_` variable or browser code. Signup verifies the email by magic link and then asks the user to set a password; later sign-ins use email and password. Password reset uses a one-time email link. Add `http://localhost:3000/auth/callback` to Supabase Auth's allowed redirect URLs for local development, and add the deployed callback URL before production.
+Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Keep actual credentials in local environment settings, never in source control. Signup verifies the email by magic link and then asks the user to set a password; later sign-ins use email and password. Password reset uses a one-time email link. Add `http://localhost:3000/auth/callback` to Supabase Auth's allowed redirect URLs for local development, and add the deployed callback URL before production.
 
-The initial migration at `supabase/migrations/20261003000000_core_schema.sql` creates the app schema, RLS policies, filtered public views, starter categories, and private `mentor-proof` storage. This migration has already been applied to the configured project. Do not run it again; use a new migration for future schema changes.
+The initial migration at `supabase/migrations/20261003000000_core_schema.sql` creates the app schema, RLS policies, filtered public views, starter categories, and private `mentor-proof` storage. For a new Supabase project, apply this migration once in the SQL Editor. If the schema is already installed, do not run it again; use a new migration for future schema changes.
 
 After creating your first account, promote that account to admin in the Supabase SQL Editor. Find the account UUID under Authentication → Users, then run:
 
@@ -56,4 +56,4 @@ Import the GitHub repository into Vercel using the Next.js preset. Add these env
 
 After the first Vercel deployment, add `https://<your-vercel-domain>/auth/callback` to Supabase **Authentication → URL Configuration → Redirect URLs**, and set the production site URL there. Add the same callback URL for preview deployments only if you intend to test email authentication on previews. Redeploy after setting environment variables or changing the domain.
 
-Never commit `.env.local` or a Supabase secret/service-role key. `.env.example` contains placeholders only.
+Keep `.env.local` and all secret/service-role keys out of the public repository. `.env.example` contains placeholders only.

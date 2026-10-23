@@ -4,7 +4,12 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const requestedNext = request.nextUrl.searchParams.get("next");
-  const next = requestedNext === "/mentor-apply" || requestedNext === "/admin" || requestedNext === "/set-password" ? requestedNext : "/feed";
+  const next =
+    requestedNext === "/mentor-apply" ||
+    requestedNext === "/admin" ||
+    requestedNext === "/set-password"
+      ? requestedNext
+      : "/feed";
 
   if (code) {
     const supabase = await createClient();

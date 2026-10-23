@@ -22,16 +22,34 @@ export async function createPostAction(input: {
   const pseudonym = input.pseudonym.trim();
   const slug = categorySlugs[input.category];
 
-  if (!slug || title.length < 8 || title.length > 160 || body.length < 20 || body.length > 10000 || pseudonym.length < 2 || pseudonym.length > 60) {
-    return { ok: false as const, code: "validation" as const, message: "Check the title, reflection, and selected category, then try again." };
+  if (
+    !slug ||
+    title.length < 8 ||
+    title.length > 160 ||
+    body.length < 20 ||
+    body.length > 10000 ||
+    pseudonym.length < 2 ||
+    pseudonym.length > 60
+  ) {
+    return {
+      ok: false as const,
+      code: "validation" as const,
+      message:
+        "Check the title, reflection, and selected category, then try again.",
+    };
   }
 
   try {
     const supabase = await createClient();
-    const { data: claims, error: claimsError } = await supabase.auth.getClaims();
+    const { data: claims, error: claimsError } =
+      await supabase.auth.getClaims();
     const userId = claims?.claims.sub;
     if (claimsError || typeof userId !== "string") {
-      return { ok: false as const, code: "auth" as const, message: "Sign in before submitting a reflection." };
+      return {
+        ok: false as const,
+        code: "auth" as const,
+        message: "Sign in before submitting a reflection.",
+      };
     }
 
     const { data: category, error: categoryError } = await supabase
@@ -42,9 +60,16 @@ export async function createPostAction(input: {
       .maybeSingle();
 
     if (categoryError || !category) {
-      return { ok: false as const, code: "save" as const, message: categoryError
-        ? `Could not load the selected category (${categoryError.code}): ${categoryError.message}`
-        : "This category is unavailable. Check that the starter categories exist in Supabase." };
+      if (categoryError)
+        console.error(
+          "[feed:create] category lookup failed",
+          categoryError.code,
+        );
+      return {
+        ok: false as const,
+        code: "save" as const,
+        message: "We couldn’t prepare your reflection. Please try again.",
+      };
     }
 
     const { data: post, error } = await supabase
@@ -62,36 +87,60 @@ export async function createPostAction(input: {
       .single();
 
     if (error || !post) {
-      return { ok: false as const, code: "save" as const, message: error
-        ? `Supabase could not save this reflection (${error.code}): ${error.message}`
-        : "Supabase did not return the saved reflection. Please try again." };
+      if (error) console.error("[feed:create] post insert failed", error.code);
+      return {
+        ok: false as const,
+        code: "save" as const,
+        message:
+          "We couldn’t save your reflection. Please try again. If the problem continues, contact support.",
+      };
     }
 
     return { ok: true as const, postId: post.id };
   } catch {
-    return { ok: false as const, code: "save" as const, message: "We could not connect to Second View. Please try again." };
+    return {
+      ok: false as const,
+      code: "save" as const,
+      message: "We could not connect to Second View. Please try again.",
+    };
   }
 }
 
 export async function reportPostAction(postId: string, reason: string) {
-  if (!/^[0-9a-f-]{36}$/i.test(postId) || reason.trim().length < 5 || reason.trim().length > 2000) {
-    return { ok: false as const, message: "Choose a reason with at least five characters." };
+  if (
+    !/^[0-9a-f-]{36}$/i.test(postId) ||
+    reason.trim().length < 5 ||
+    reason.trim().length > 2000
+  ) {
+    return {
+      ok: false as const,
+      message: "Choose a reason with at least five characters.",
+    };
   }
 
   try {
     const supabase = await createClient();
-    const { data: claims, error: claimsError } = await supabase.auth.getClaims();
+    const { data: claims, error: claimsError } =
+      await supabase.auth.getClaims();
     const userId = claims?.claims.sub;
-    if (claimsError || typeof userId !== "string") return { ok: false as const, message: "Sign in to report a reflection." };
+    if (claimsError || typeof userId !== "string")
+      return { ok: false as const, message: "Sign in to report a reflection." };
     const { error } = await supabase.from("reports").insert({
       reporter_id: userId,
       target_type: "post",
       target_id: postId,
       reason: reason.trim(),
     });
-    if (error) return { ok: false as const, message: "We could not submit this report. Please try again." };
+    if (error)
+      return {
+        ok: false as const,
+        message: "We could not submit this report. Please try again.",
+      };
     return { ok: true as const };
   } catch {
-    return { ok: false as const, message: "We could not connect to Second View. Please try again." };
+    return {
+      ok: false as const,
+      message: "We could not connect to Second View. Please try again.",
+    };
   }
 }

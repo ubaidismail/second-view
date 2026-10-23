@@ -4,10 +4,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Second View — A quiet place for another perspective",
   description:
-    "Share what is weighing on you and find thoughtful perspectives from verified professionals.",
+    "Share what is weighing on you under a pseudonym. Reflections are moderated, and mentor credentials are reviewed before responses.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body>{children}</body>

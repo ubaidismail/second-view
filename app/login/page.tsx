@@ -1,9 +1,30 @@
 import AuthForm from "./auth-form";
 import Link from "next/link";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import SiteBrand from "../components/site-brand";
+import { createClient } from "@/lib/supabase/server";
 
-export default function LoginPage() {
+type SearchParams = Promise<{ next?: string }>;
+
+// Only allow internal paths like "/admin", never "https://evil.com" or "//evil.com"
+function safeNext(next?: string) {
+  return next && next.startsWith("/") && !next.startsWith("//") ? next : "/feed";
+}
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const supabase = await createClient();
+  const { data: claims } = await supabase.auth.getClaims();
+
+  if (typeof claims?.claims.sub === "string") {
+    const { next } = await searchParams;
+    redirect(safeNext(next));
+  }
+
   return (
     <>
       <main className="auth-shell">
@@ -11,7 +32,7 @@ export default function LoginPage() {
           <SiteBrand />
           <div className="story-content">
             <div className="eyebrow">
-              <span>●</span> A SPACE TO FIND PERSPECTIVE
+              <span>●</span> A SPACE TO SHARE AND REFLECT 
             </div>
             <h1>A thoughtful harbor for life’s complicated moments.</h1>
             <p>

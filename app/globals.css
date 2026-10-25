@@ -185,6 +185,26 @@ input {
   max-width: 870px;
   margin: auto;
 }
+.spinner {
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-right: 0.4em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -0.1em;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 .trust-row span {
   border-radius: 999px;
   background: #f0f3ef;
@@ -1201,6 +1221,39 @@ input {
   font-weight: 700;
   color: #59675d;
   margin-bottom: -8px;
+}
+.compose-field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: -8px;
+}
+.ai-assist-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #dce8dd;
+  border-radius: 999px;
+  background: #f4f8f3;
+  color: #486252;
+  padding: 7px 11px;
+  font: 600 11px var(--font-body);
+  cursor: pointer;
+}
+.ai-assist-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.ai-assist-button span {
+  color: #8c7650;
+  font-size: 14px;
+}
+.ai-assist-note {
+  margin: -6px 2px 0;
+  color: #78827b;
+  font-size: 10px;
+  line-height: 1.5;
 }
 .disclaimer-inline {
   font-size: 11px;

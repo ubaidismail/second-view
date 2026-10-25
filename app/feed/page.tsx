@@ -6,7 +6,11 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import ModerationNotice from "../components/moderation-notice";
 import { createClient } from "@/lib/supabase/client";
-import { createPostAction, reportPostAction } from "./actions";
+import {
+  assistWithReflectionAction,
+  createPostAction,
+  reportPostAction,
+} from "./actions";
 
 type Perspective = {
   id: string;
@@ -46,6 +50,8 @@ export default function FeedPage() {
   const [sensitivityVeil, setSensitivityVeil] = useState(false);
   const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [assisting, setAssisting] = useState(false);
+  const [assistNotice, setAssistNotice] = useState("");
   const [submittedDraft, setSubmittedDraft] = useState<{
     id: string;
     alias: string;
@@ -177,7 +183,7 @@ export default function FeedPage() {
       ? posts
       : posts.filter((post) => post.category === selected);
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!signedIn) {
       setNotice("Sign in with your email before submitting a reflection.");
@@ -192,6 +198,8 @@ export default function FeedPage() {
       category,
       sensitivityVeil,
     });
+    // console.log("createPostAction result", result);
+    // return false;
     setSubmitting(false);
     if (!result.ok) {
       setNotice(result.message);
@@ -220,6 +228,23 @@ export default function FeedPage() {
       setReportingId("");
       setReportReason("");
     }
+  }
+
+  async function assistWithWriting() {
+    setAssisting(true);
+    setAssistNotice("");
+    const result = await assistWithReflectionAction({ title, body });
+    setAssisting(false);
+    if (!result.ok) {
+      setAssistNotice(result.message);
+      return;
+    }
+    setBody(result.text);
+    setAssistNotice(
+      body.trim()
+        ? "Your draft has been refined. Review it before submitting."
+        : "A starting draft is ready. Make it your own before submitting.",
+    );
   }
 
   function shuffleAlias() {
@@ -302,9 +327,29 @@ export default function FeedPage() {
                     <option key={item}>{item}</option>
                   ))}
                 </select>
-                <label className="sr-only" htmlFor="post-body">
-                  Your reflection
-                </label>
+                <div className="compose-field-heading">
+                  <label className="compose-label" htmlFor="post-body">
+                    Your reflection
+                  </label>
+                  <button
+                    className="ai-assist-button"
+                    type="button"
+                    onClick={assistWithWriting}
+                    disabled={assisting || title.trim().length < 8}
+                    aria-label={
+                      body.trim()
+                        ? "Refine your reflection with AI"
+                        : "Draft your reflection with AI"
+                    }
+                  >
+                    <span aria-hidden="true">✦</span>
+                    {assisting
+                      ? "Writing…"
+                      : body.trim()
+                        ? "Refine with AI"
+                        : "Write with AI"}
+                  </button>
+                </div>
                 <textarea
                   id="post-body"
                   value={body}
@@ -315,6 +360,10 @@ export default function FeedPage() {
                   placeholder="What has been weighing on you? Take your time…"
                   required
                 />
+                <p className="ai-assist-note" aria-live="polite">
+                  {assistNotice ||
+                    "When you choose AI help, your title and draft are sent to our AI provider. Review all suggestions before sharing."}
+                </p>
                 <label className="veil-choice">
                   <input
                     type="checkbox"

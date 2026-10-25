@@ -21,6 +21,7 @@ async function adminClient() {
 }
 
 export async function reviewPostAction(formData: FormData) {
+    console.log("[debug] id:", formData.get("id"), "status:", formData.get("status"));
   const id = String(formData.get("id") ?? "");
   const status = String(formData.get("status") ?? "");
   if (!uuidPattern.test(id) || !["approved", "rejected"].includes(status))

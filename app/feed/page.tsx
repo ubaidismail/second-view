@@ -1,11 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import ModerationNotice from "../components/moderation-notice";
+import UiIcon from "../components/ui-icon";
 import { createClient } from "@/lib/supabase/client";
+import ReplyThread, { type Reply } from "./reply-thread";
 import {
   assistWithReflectionAction,
   createPostAction,
@@ -27,6 +29,8 @@ type FeedPost = {
   body: string;
   sensitivityVeil: boolean;
   responses: Perspective[];
+  replies: Reply[];
+  canReply: boolean;
 };
 const categories = [
   "All reflections",
@@ -36,6 +40,14 @@ const categories = [
   "Relationships",
   "Identity",
 ];
+const categoryIcons = [
+  "squares-2x2",
+  "briefcase",
+  "heart",
+  "arrow-path",
+  "user-group",
+  "fingerprint",
+] as const;
 
 export default function FeedPage() {
   const [selected, setSelected] = useState("All reflections");
@@ -129,6 +141,14 @@ export default function FeedPage() {
         const responses = (responseData ?? []) as unknown as Array<
           Perspective & { post_id: string }
         >;
+        const { data: replyData } = await supabase
+          .from("public_replies")
+          .select("id, post_id, parent_id, body, created_at, is_post_owner, author_name, author_title, edited_at, is_mine").in("post_id", postIds)
+          .order("created_at", { ascending: true });
+        const { data: allowedIds } = await supabase.rpc("my_replyable_post_ids", { pids: postIds });
+        if (!active || feedSettled) return;
+        const replies = (replyData ?? []) as unknown as Reply[];
+        const replyable = new Set((allowedIds ?? []) as string[]);
         setLivePosts(
           rows.map((post) => ({
             id: post.id,
@@ -140,6 +160,8 @@ export default function FeedPage() {
             responses: responses.filter(
               (response) => response.post_id === post.id,
             ),
+            replies: replies.filter((r) => r.post_id === post.id),
+            canReply: replyable.has(post.id),
           })),
         );
         finishFeedLoad();
@@ -270,7 +292,7 @@ export default function FeedPage() {
                 className={selected === item ? "channel active" : "channel"}
                 onClick={() => setSelected(item)}
               >
-                <span>{["✧", "↗", "♡", "◌", "⌁", "◇"][i]}</span>
+                <span><UiIcon name={categoryIcons[i]} size="sm" /></span>
                 {item}
                 <small>
                   {item === "All reflections"
@@ -291,14 +313,14 @@ export default function FeedPage() {
           <div className="surface-card composer-card">
             <div className="alias-row">
               <span className="alias-badge">
-                ◉ &nbsp;Writing as <b>{alias}</b>
+                <UiIcon name="user-circle" size="sm" /> Writing as <b>{alias}</b>
               </span>
               <button
                 type="button"
                 className="text-link"
                 onClick={shuffleAlias}
               >
-                ↻ Shuffle name
+                <UiIcon name="arrow-path" size="xs" /> Shuffle name
               </button>
             </div>
             {signedIn ? (
@@ -342,7 +364,7 @@ export default function FeedPage() {
                         : "Draft your reflection with AI"
                     }
                   >
-                    <span aria-hidden="true">✦</span>
+                    <UiIcon name="sparkles" size="xs" />
                     {assisting
                       ? "Writing…"
                       : body.trim()
@@ -385,7 +407,7 @@ export default function FeedPage() {
                     disabled={submitting}
                   >
                     {submitting ? "Submitting…" : "Submit for review"}{" "}
-                    <span>→</span>
+                    <UiIcon name="arrow-right" size="sm" />
                   </button>
                 </div>
                 {notice && (
@@ -401,7 +423,7 @@ export default function FeedPage() {
                   Browse approved posts without an account.
                 </p>
                 <Link className="button" href="/login">
-                  Sign in <span>→</span>
+                  Sign in <UiIcon name="arrow-right" size="sm" />
                 </Link>
               </div>
             )}
@@ -483,9 +505,11 @@ export default function FeedPage() {
                   ))
                 ) : (
                   <div className="response-preview">
-                    <p>Reviewed mentor responses will appear here.</p>
+                    {/* <p>Reviewed mentor responses will appear here.</p> */}
+                    <ReplyThread postId={post.id} replies={post.replies} canReply={post.canReply} />
                   </div>
                 )}
+
                 <div className="post-bottom">
                   <span>Approved reflection</span>
                   {signedIn && (
@@ -536,7 +560,7 @@ export default function FeedPage() {
               credentials must be reviewed before they can respond.
             </p>
             <Link className="text-link" href="/profile">
-              Set your community name ↗
+              Set your community name <UiIcon name="arrow-up-right" size="xs" />
             </Link>
           </section>
           <section className="surface-card sidebar-card">
@@ -544,7 +568,7 @@ export default function FeedPage() {
             <h3>Become a mentor</h3>
             <p>Offer a considered perspective on your own schedule.</p>
             <Link className="button button-small" href="/mentor-apply">
-              View the application <span>→</span>
+              View the application <UiIcon name="arrow-right" size="sm" />
             </Link>
           </section>
         </aside>

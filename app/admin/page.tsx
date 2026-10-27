@@ -6,10 +6,12 @@ import { createClient } from "@/lib/supabase/server";
 import {
   reviewMentorAction,
   reviewPostAction,
+  reviewReplyAction,
   reviewReportAction,
   reviewResponseAction,
 } from "./actions";
 import SubmitButton from "./submit-button";
+import UiIcon from "../components/ui-icon";
 
 /* ------------------------------------------------------------------ */
 /* 1. TYPES                                                            */
@@ -34,6 +36,14 @@ type ResponseRow = {
   id: string;
   post_id: string;
   mentor_id: string;
+  body: string;
+  created_at: string;
+};
+
+type ReplyRow = {
+  id: string;
+  post_id: string;
+  parent_id: string | null;
   body: string;
   created_at: string;
 };
@@ -67,42 +77,50 @@ type ReportRow = {
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
 async function loadAdminData(supabase: Supabase) {
-  const [posts, responses, mentors, reports, categories] = await Promise.all([
-    // Pending posts come from the admin_post_queue view
-    supabase
-      .from("admin_post_queue")
-      .select(
-        "id, category_id, pseudonym, title, body, crisis_flag, flag_reasons, status, created_at",
-      )
-      .order("crisis_flag", { ascending: false })
-      .order("created_at", { ascending: true }),
+  const [posts, responses, replies, mentors, reports, categories] =
+    await Promise.all([
+      // Pending posts come from the admin_post_queue view
+      supabase
+        .from("admin_post_queue")
+        .select(
+          "id, category_id, pseudonym, title, body, crisis_flag, flag_reasons, status, created_at",
+        )
+        .order("crisis_flag", { ascending: false })
+        .order("created_at", { ascending: true }),
 
-    supabase
-      .from("responses")
-      .select("id, post_id, mentor_id, body, created_at")
-      .eq("status", "pending")
-      .order("created_at", { ascending: true }),
+      supabase
+        .from("responses")
+        .select("id, post_id, mentor_id, body, created_at")
+        .eq("status", "pending")
+        .order("created_at", { ascending: true }),
 
-    supabase
-      .from("mentor_applications")
-      .select(
-        "user_id, full_name, professional_title, credential_type, licensing_board, license_number, professional_email, affiliation, focus_areas, proof_path, created_at",
-      )
-      .eq("status", "pending")
-      .order("created_at", { ascending: true }),
+      supabase
+        .from("replies")
+        .select("id, post_id, parent_id, body, created_at")
+        .eq("status", "pending")
+        .order("created_at", { ascending: true }),
 
-    supabase
-      .from("reports")
-      .select("id, target_type, target_id, reason, status, created_at")
-      .in("status", ["open", "reviewing"])
-      .order("created_at", { ascending: true }),
+      supabase
+        .from("mentor_applications")
+        .select(
+          "user_id, full_name, professional_title, credential_type, licensing_board, license_number, professional_email, affiliation, focus_areas, proof_path, created_at",
+        )
+        .eq("status", "pending")
+        .order("created_at", { ascending: true }),
 
-    supabase.from("categories").select("id, name"),
-  ]);
+      supabase
+        .from("reports")
+        .select("id, target_type, target_id, reason, status, created_at")
+        .in("status", ["open", "reviewing"])
+        .order("created_at", { ascending: true }),
+
+      supabase.from("categories").select("id, name"),
+    ]);
 
   const hasError = [
     posts.error,
     responses.error,
+    replies.error,
     mentors.error,
     reports.error,
     categories.error,
@@ -111,6 +129,7 @@ async function loadAdminData(supabase: Supabase) {
   return {
     posts: (posts.data ?? []) as PostRow[],
     responses: (responses.data ?? []) as ResponseRow[],
+    replies: (replies.data ?? []) as ReplyRow[],
     mentors: (mentors.data ?? []) as MentorRow[],
     reports: (reports.data ?? []) as ReportRow[],
     categoryNames: new Map<string, string>(
@@ -264,6 +283,22 @@ function ResponseCard({ response }: { response: ResponseRow }) {
   );
 }
 
+function ReplyCard({ reply }: { reply: ReplyRow }) {
+  return (
+    <article className="surface-card admin-card">
+      <div className="admin-card-meta">
+        <span className="sample-pill">Post {reply.post_id}</span>
+        <span>{reply.parent_id ? "Reply to a comment" : "Top-level reply"}</span>
+        <span>{new Date(reply.created_at).toLocaleDateString()}</span>
+      </div>
+
+      <p className="admin-post-body">{reply.body}</p>
+
+      <ApproveRejectForm action={reviewReplyAction} fieldValue={reply.id} />
+    </article>
+  );
+}
+
 function MentorCard({ mentor }: { mentor: MentorRow }) {
   const focus = (mentor.focus_areas ?? []).join(", ") || "Not specified";
 
@@ -294,7 +329,7 @@ function MentorCard({ mentor }: { mentor: MentorRow }) {
           target="_blank"
           rel="noreferrer"
         >
-          Open private credential file ↗
+          Open private credential file <UiIcon name="arrow-up-right" size="xs" />
         </a>
       )}
 
@@ -382,8 +417,15 @@ export default async function AdminPage({
 
   // --- Step 3: load everything ---
   const params = await searchParams;
-  const { posts, responses, mentors, reports, categoryNames, hasError } =
-    await loadAdminData(supabase);
+  const {
+    posts,
+    responses,
+    replies,
+    mentors,
+    reports,
+    categoryNames,
+    hasError,
+  } = await loadAdminData(supabase);
 
 
     // TEMP DEBUG: remove when fixed
@@ -453,6 +495,16 @@ console.log("[debug] admin_post_queue:", viewCheck.data, viewCheck.error);
         >
           {responses.map((response) => (
             <ResponseCard key={response.id} response={response} />
+          ))}
+        </Section>
+
+        <Section
+          title="Pending community replies"
+          count={replies.length}
+          emptyText="No pending replies."
+        >
+          {replies.map((reply) => (
+            <ReplyCard key={reply.id} reply={reply} />
           ))}
         </Section>
 

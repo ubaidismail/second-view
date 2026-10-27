@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import UiIcon from "../components/ui-icon";
 
 export default function AuthForm() {
   const params = useSearchParams();
@@ -171,7 +172,7 @@ export default function AuthForm() {
           </button>
         </div>
         <span className="secure-label">
-          ◇ &nbsp;
+          <UiIcon name="shield-check" size="xs" />
           {mode === "signup" ? "Email verification" : "Email and password"}
         </span>
       </div>
@@ -182,10 +183,10 @@ export default function AuthForm() {
           className={role === "seeker" ? "role-choice selected" : "role-choice"}
           onClick={() => setRole("seeker")}
         >
-          <span className="role-icon">◉</span>
+          <span className="role-icon"><UiIcon name="user" size="md" /></span>
           <span>
             <b>Seek guidance</b>
-            <small>Share as a pseudonym</small>
+            <small>Share anonymously</small>
           </span>
         </button>
         <button
@@ -193,7 +194,7 @@ export default function AuthForm() {
           className={role === "mentor" ? "role-choice selected" : "role-choice"}
           onClick={() => setRole("mentor")}
         >
-          <span className="role-icon">✳</span>
+          <span className="role-icon"><UiIcon name="briefcase" size="md" /></span>
           <span>
             <b>Become a mentor</b>
             <small>Apply for review</small>
@@ -240,7 +241,7 @@ export default function AuthForm() {
           </>
         )}
         <div className="privacy-note">
-          <span>◇</span>
+          <span><UiIcon name="lock" size="md" /></span>
           <p>
             {mode === "signup"
               ? "We’ll email a verification link. After confirming your email, you’ll create a password for future sign-ins."
@@ -253,7 +254,7 @@ export default function AuthForm() {
             : mode === "signin"
               ? "Sign in"
               : "Create account"}{" "}
-          <span>→</span>
+          <UiIcon name="arrow-right" size="sm" />
         </button>
         {notice && (
           <p className="form-notice" role="status">

@@ -6,6 +6,7 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { createClient } from "@/lib/supabase/client";
 import { createMentorApplicationAction } from "./actions";
+import UiIcon from "../components/ui-icon";
 
 const focusAreas = [
   "Career transitions",
@@ -176,9 +177,9 @@ export default function MentorApplyPage() {
             navigating a difficult decision or transition.
           </p>
           <div className="apply-values">
-            <span>◷ &nbsp;Flexible written responses</span>
-            <span>✓ &nbsp;Credentials reviewed before approval</span>
-            <span>♡ &nbsp;Clear community guidelines</span>
+            <span><UiIcon name="clock" size="xs" /> Flexible written responses</span>
+            <span><UiIcon name="check-badge" size="xs" /> Credentials reviewed before approval</span>
+            <span><UiIcon name="heart" size="xs" /> Clear community guidelines</span>
           </div>
         </section>
         <div className="apply-columns">
@@ -208,7 +209,7 @@ export default function MentorApplyPage() {
                   className="button"
                   href="/login?mode=signup&amp;role=mentor"
                 >
-                  Sign in or create an account <span>→</span>
+                  Sign in or create an account <UiIcon name="arrow-right" size="sm" />
                 </Link>
               </div>
             ) : applicationStatus === "unavailable" ? (
@@ -218,7 +219,7 @@ export default function MentorApplyPage() {
               </div>
             ) : applicationStatus ? (
               <div className="submit-success" role="status">
-                <span>{applicationStatus === "approved" ? "✓" : "…"}</span>
+                <span><UiIcon name={applicationStatus === "approved" ? "check-circle" : "clock"} size="md" /></span>
                 <h3>
                   {applicationStatus === "approved"
                     ? "Application approved"
@@ -317,7 +318,7 @@ export default function MentorApplyPage() {
                         aria-pressed={selectedFocus.includes(focus)}
                         onClick={() => toggleFocus(focus)}
                       >
-                        {selectedFocus.includes(focus) ? "✓" : "+"} &nbsp;
+                        <UiIcon name={selectedFocus.includes(focus) ? "check" : "plus"} size="xs" />
                         {focus}
                       </button>
                     ))}
@@ -337,7 +338,7 @@ export default function MentorApplyPage() {
                     }
                   />
                   <span className="upload-box">
-                    <span className="upload-icon">↑</span>
+                    <span className="upload-icon"><UiIcon name="arrow-up-tray" size="md" /></span>
                     <b>{fileName || "Choose a credential document"}</b>
                     <small>
                       Stored in a private bucket; accessible to you and
@@ -362,14 +363,14 @@ export default function MentorApplyPage() {
                   {submitting
                     ? "Submitting securely…"
                     : "Submit for credential review"}{" "}
-                  <span>→</span>
+                  <UiIcon name="arrow-right" size="sm" />
                 </button>
               </form>
             ) : null}
           </section>
           <aside className="apply-aside">
             <section className="mentor-callout">
-              <span>✧</span>
+              <span><UiIcon name="check-badge" size="lg" /></span>
               <h2>Vetted by people, not an algorithm.</h2>
               <p>
                 Applications are intended for manual review. Verification must

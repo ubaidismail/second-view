@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import type { Reply } from "./reply-thread";
 import { exit } from "process";
 
 export async function assistWithReflectionAction(input: {
@@ -236,5 +237,120 @@ export async function reportPostAction(postId: string, reason: string) {
       ok: false as const,
       message: "We could not connect to Second View. Please try again.",
     };
+  }
+}
+const replyColumns =
+  "id, post_id, parent_id, body, created_at, is_post_owner, author_name, author_title, edited_at, is_mine";
+
+  export async function createReplyAction(input: {
+  postId: string;
+  parentId: string | null;
+  body: string;
+}) {
+  const body = input.body.trim();
+  const isUuid = (v: string) => /^[0-9a-f-]{36}$/i.test(v);
+
+  if (
+    !isUuid(input.postId) ||
+    (input.parentId !== null && !isUuid(input.parentId)) ||
+    body.length < 2 ||
+    body.length > 4000
+  ) {
+    return { ok: false as const, message: "Write a reply of at least two characters." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: claims, error: claimsError } = await supabase.auth.getClaims();
+    const userId = claims?.claims.sub;
+    if (claimsError || typeof userId !== "string")
+      return { ok: false as const, message: "Sign in to reply." };
+
+    if (input.parentId) {
+      const { data: parent } = await supabase
+        .from("public_replies")
+        .select("id")
+        .eq("id", input.parentId)
+        .eq("post_id", input.postId)
+        .maybeSingle();
+      if (!parent)
+        return { ok: false as const, message: "That comment is no longer available." };
+    }
+
+    const { data: inserted, error } = await supabase
+      .from("replies")
+      .insert({
+        post_id: input.postId,
+        parent_id: input.parentId,
+        author_id: userId,
+        body,
+      })
+      .select("id")
+      .single();
+
+    if (error || !inserted) {
+      if (error) console.error("[feed:reply] insert failed", error.code);
+      return {
+        ok: false as const,
+        message:
+          error?.code === "42501"
+            ? "Only the author of this reflection and verified mentors can reply."
+            : "We couldn’t send your reply. Please try again.",
+      };
+    }
+
+    const { data: reply } = await supabase
+      .from("public_replies")
+      .select(replyColumns)
+      .eq("id", inserted.id)
+      .maybeSingle();
+    if (!reply)
+      return { ok: false as const, message: "Your reply was saved. Refresh the page to see it." };
+
+    return { ok: true as const, reply: reply as unknown as Reply };
+  } catch {
+    return { ok: false as const, message: "We could not connect to Second View. Please try again." };
+  }
+}
+
+export async function updateReplyAction(input: { replyId: string; body: string }) {
+  const body = input.body.trim();
+  if (!/^[0-9a-f-]{36}$/i.test(input.replyId) || body.length < 2 || body.length > 4000) {
+    return { ok: false as const, message: "Write a reply of at least two characters." };
+  }
+
+  try {
+    const supabase = await createClient();
+    const { data: claims, error: claimsError } = await supabase.auth.getClaims();
+    const userId = claims?.claims.sub;
+    if (claimsError || typeof userId !== "string")
+      return { ok: false as const, message: "Sign in to edit your reply." };
+
+    const { data: updated, error } = await supabase
+      .from("replies")
+      .update({ body })
+      .eq("id", input.replyId)
+      .eq("author_id", userId)
+      .select("id")
+      .maybeSingle();
+
+    if (error) {
+      console.error("[feed:reply] update failed", error.code);
+      return { ok: false as const, message: "We couldn’t save your changes. Please try again." };
+    }
+    if (!updated)
+      return { ok: false as const, message: "You can only edit your own replies." };
+
+    const { data: reply } = await supabase
+      .from("public_replies")
+      .select(replyColumns)
+      .eq("id", input.replyId)
+      .maybeSingle();
+    if (!reply)
+      return { ok: false as const, message: "Saved. Refresh the page to see the change." };
+
+    return { ok: true as const, reply: reply as unknown as Reply };
+  } catch {
+    return { ok: false as const, message: "We could not connect to Second View. Please try again." };
   }
 }

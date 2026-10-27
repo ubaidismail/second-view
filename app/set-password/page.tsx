@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import SiteBrand from "../components/site-brand";
+import UiIcon from "../components/ui-icon";
 
 export default function SetPasswordPage() {
   const router = useRouter();
@@ -99,12 +100,12 @@ export default function SetPasswordPage() {
               required
             />
             <button className="button" type="submit" disabled={saving}>
-              {saving ? "Saving…" : "Set password"} <span>→</span>
+              {saving ? "Saving…" : "Set password"} <UiIcon name="arrow-right" size="sm" />
             </button>
           </form>
         ) : (
           <Link className="button" href="/login">
-            Back to sign in <span>→</span>
+            Back to sign in <UiIcon name="arrow-right" size="sm" />
           </Link>
         )}
         <p className="form-notice" role="status">

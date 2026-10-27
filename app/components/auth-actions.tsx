@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import UiIcon from "./ui-icon";
 
 export default function AuthActions() {
   const router = useRouter();
@@ -63,7 +64,7 @@ export default function AuthActions() {
         <>
           <Link href="/login">Log in</Link>
           <Link className="button button-small" href="/mentor-apply">
-            Become a mentor <span>↗</span>
+            <span>Become a mentor</span> <UiIcon name="arrow-up-right" size="sm" />
           </Link>
         </>
       )}

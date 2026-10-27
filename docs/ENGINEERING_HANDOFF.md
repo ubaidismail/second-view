@@ -6,7 +6,7 @@
 
 ## 1. Project status
 
-Second View is a responsive web application for pseudonymous reflections, a moderated feed, and mentor applications. It is not a native mobile app. The application uses Supabase Auth for identity and passwords, PostgreSQL for application data, and Supabase Storage for private mentor credential files.
+Second View is a responsive web application for reflections shared under a community name, a moderated feed, and mentor applications. It is not a native mobile app. The application uses Supabase Auth for identity and passwords, PostgreSQL for application data, and Supabase Storage for private mentor credential files.
 
 The current local worktree contains uncommitted AI-writing changes and documentation changes. Vercel deploys the commit pushed to the connected Git branch; local edits are not part of the deployed site until they are committed and pushed.
 
@@ -35,7 +35,7 @@ The reset/signup redirect uses the current browser origin in `app/login/auth-for
 
 ### Reflection and moderation flow
 
-- Signed-in seekers submit a title, body, category, pseudonym, and optional sensitivity veil.
+- Signed-in seekers submit a title, body, category, community name, and optional sensitivity veil.
 - New posts are stored with `pending` status. Only approved content appears in the public feed views.
 - The feed currently offers explicit AI draft/refine assistance. On click, the title and current body are sent to Groq. The suggestion replaces the editable draft only after a successful response; users should review it before submitting.
 - Users can report posts. Admins can review the post and report queues.
@@ -68,6 +68,7 @@ All paths below are relative to the repository root.
 | `app/components/site-header.tsx` | Shared app header/navigation |
 | `app/components/site-footer.tsx` | Shared footer and footer links |
 | `app/components/site-brand.tsx` | Shared brand mark/name |
+| `app/components/ui-icon.tsx` | Central Heroicons registry and consistent icon sizing |
 | `app/components/moderation-notice.tsx` | Shared moderation note |
 | `app/layout.tsx` | Root layout, metadata, global CSS imports |
 | `app/globals.css` | Application-wide layout, component, and responsive styles |
@@ -112,7 +113,7 @@ Main tables:
 
 - `profiles` — one row per Supabase Auth user; community display name and app role (`seeker`, `mentor`, `admin`).
 - `categories` — active feed channels.
-- `posts` — pseudonymous seeker reflections and moderation state.
+- `posts` — seeker reflections with a public community name and moderation state.
 - `mentor_applications` — private application and credential metadata.
 - `responses`, `followups`, `reports` — response/review/report data models.
 
@@ -162,7 +163,7 @@ After removing the local generated `.next/` directory and starting a fresh dev s
 ## 7. Product and operational limitations
 
 - The app is an MVP and has not had an independent security, privacy, clinical, or legal review.
-- Public pseudonyms hide the sign-in email from public feed views; they do not make a post unknown to the service operator. Auth identity and post authorship remain linked in the database for authorization/moderation.
+- Public posts show the community name instead of the sign-in email. Posts are not anonymous to the service operator: account identity and authorship remain linked in the database for authorization and moderation.
 - Do not promise end-to-end encryption: the current app stores post bodies in Supabase and sends selected drafts to Groq when AI assistance is used.
 - Mentor credentials are intended for manual review; the app does not perform an authoritative license audit automatically.
 - Mentor response authoring, follow-up submission, and helpful/relief interactions are not complete flows despite their database tables.
@@ -175,6 +176,7 @@ Before inviting real users to submit sensitive stories, complete a privacy/secur
 - Built a responsive Next.js web application with landing, sign-in, feed, profile, mentor application, and admin review routes.
 - Added Supabase Auth, profile creation, Postgres schema/RLS/views, post/report/application writes, and private credential storage.
 - Consolidated repeated brand/footer/moderation-note UI into shared components and applied the requested wording cleanup in the app.
+- Replaced decorative emoji and Unicode icon glyphs with Heroicons through the shared `UiIcon` component; `@heroicons/react` is declared in `package.json`.
 - Added title-based AI drafting and existing-description refinement through a server action calling Groq's Responses API with `openai/gpt-oss-120b`.
 - Added environment-variable examples and this engineering handoff.
 

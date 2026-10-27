@@ -61,7 +61,31 @@ input {
   place-items: center;
   background: var(--ink);
   color: #fff;
-  font-size: 22px;
+}
+.ui-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+.ui-icon-xs {
+  width: 14px;
+  height: 14px;
+}
+.ui-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+.ui-icon-md {
+  width: 20px;
+  height: 20px;
+}
+.ui-icon-lg {
+  width: 24px;
+  height: 24px;
+}
+.brand-mark .ui-icon {
+  width: 20px;
+  height: 20px;
 }
 .main-nav,
 .nav-actions {
@@ -139,6 +163,9 @@ input {
   position: relative;
 }
 .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   width: max-content;
   max-width: 100%;
   margin: 0 auto 22px;
@@ -151,8 +178,7 @@ input {
   letter-spacing: 0.11em;
   font-weight: 700;
 }
-.eyebrow span {
-  margin-right: 6px;
+.eyebrow > .ui-icon {
   color: #477761;
 }
 .hero h1 {
@@ -175,6 +201,14 @@ input {
   gap: 12px;
   margin: 28px auto 30px;
 }
+.reply-thread { margin-top: 1rem; }
+.reply { margin-top: 0.75rem; }
+.reply-head { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.reply-role { font-size: 0.8rem; opacity: 0.75; }
+.reply-children { margin-left: 0.5rem; padding-left: 1rem; border-left: 2px solid rgba(128, 128, 128, 0.25); }
+.reply-form textarea { width: 100%; }
+.reply-form-actions { display: flex; gap: 0.75rem; align-items: center; margin-top: 0.5rem; }
+.reply-note { font-size: 0.85rem; opacity: 0.7; }
 .trust-row {
   display: flex;
   justify-content: center;
@@ -185,6 +219,8 @@ input {
   max-width: 870px;
   margin: auto;
 }
+.reply-actions { display: flex; gap: 0.75rem; }
+.reply-edited { opacity: 0.7; }
 .spinner {
   display: inline-block;
   width: 0.9em;
@@ -206,6 +242,9 @@ input {
   cursor: not-allowed;
 }
 .trust-row span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border-radius: 999px;
   background: #f0f3ef;
   padding: 8px 13px;
@@ -609,6 +648,11 @@ input {
   color: #53645a;
   font-size: 13px;
 }
+.trust-list > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 .auth-panel {
   border: 1px solid #e4e9e4;
   border-left: 0;
@@ -653,6 +697,9 @@ input {
   color: white;
 }
 .secure-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: #68746c;
   font-size: 11px;
 }
@@ -699,6 +746,14 @@ input {
   place-items: center;
   color: #365b44;
   flex: 0 0 auto;
+}
+.privacy-note > span,
+.role-icon,
+.upload-icon,
+.submit-success > span,
+.mentor-callout > span {
+  display: grid;
+  place-items: center;
 }
 .role-choice b {
   font-size: 12px;
@@ -775,7 +830,7 @@ input {
   color: #355b42;
 }
 .privacy-note > span {
-  font-size: 20px;
+  flex: 0 0 auto;
 }
 .privacy-note p {
   margin: 0;
@@ -1126,6 +1181,8 @@ input {
 }
 .channel > span {
   color: #698675;
+  display: grid;
+  place-items: center;
 }
 .channel.active {
   background: #eaf2eb;
@@ -1180,6 +1237,12 @@ input {
   color: #486252;
   padding: 7px 11px;
   font-size: 11px;
+}
+.alias-badge {
+  gap: 5px;
+}
+.text-link > .ui-icon {
+  margin-left: 3px;
 }
 .alias-badge b {
   margin-left: 4px;
@@ -1245,9 +1308,8 @@ input {
   cursor: not-allowed;
   opacity: 0.55;
 }
-.ai-assist-button span {
+.ai-assist-button > .ui-icon {
   color: #8c7650;
-  font-size: 14px;
 }
 .ai-assist-note {
   margin: -6px 2px 0;
@@ -1635,6 +1697,9 @@ input {
   margin-top: 22px;
 }
 .apply-values span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 12px;
   border-radius: 999px;
   background: #eef3ef;
@@ -1761,7 +1826,6 @@ input {
   background: #e2efe5;
   display: grid;
   place-items: center;
-  font-size: 18px;
 }
 .upload-box b {
   font-size: 12px;

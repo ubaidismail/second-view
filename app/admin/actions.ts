@@ -63,6 +63,27 @@ export async function reviewResponseAction(formData: FormData) {
   redirect("/admin?updated=response");
 }
 
+export async function reviewReplyAction(formData: FormData) {
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!uuidPattern.test(id) || !["approved", "rejected"].includes(status))
+    redirect("/admin?error=invalid");
+  const admin = await adminClient();
+  if (!admin) redirect("/admin?error=unauthorized");
+  const { error } = await admin.supabase
+    .from("replies")
+    .update({
+      status,
+      reviewed_by: admin.userId,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+  if (error) redirect("/admin?error=review");
+  revalidatePath("/admin");
+  revalidatePath("/feed");
+  redirect("/admin?updated=reply");
+}
+
 export async function reviewMentorAction(formData: FormData) {
   const userId = String(formData.get("userId") ?? "");
   const status = String(formData.get("status") ?? "");

@@ -2,30 +2,31 @@ import Link from "next/link";
 import ModerationNotice from "./components/moderation-notice";
 import SiteBrand from "./components/site-brand";
 import SiteFooter from "./components/site-footer";
+import UiIcon from "./components/ui-icon";
 
 const principles = [
-  [
-    "◉",
-    "Pseudonymous sharing",
-    "Your community posts use a display name. Your sign-in email is not shown to public readers.",
-  ],
-  [
-    "✓",
-    "Manual credential review",
-    "Mentor credentials are reviewed before an account can respond.",
-  ],
-  [
-    "✳",
-    "Thoughtful, not loud",
-    "A slower, more considered space for useful perspectives and small next steps.",
-  ],
-];
+  {
+    icon: "user-circle",
+    title: "Share with a community name",
+    copy: "Your community posts use a display name. Your sign-in email is not shown to public readers.",
+  },
+  {
+    icon: "shield-check",
+    title: "Manual credential review",
+    copy: "Mentor credentials are reviewed before an account can respond.",
+  },
+  {
+    icon: "sparkles",
+    title: "Thoughtful, not loud",
+    copy: "A slower, more considered space for useful perspectives and small next steps.",
+  },
+] as const;
 
 const steps = [
   [
     "01",
     "Unburden yourself",
-    "Put the situation into words, at your own pace and under a pseudonym.",
+    "Put the situation into words, at your own pace, using a community name instead of your real name.",
   ],
   [
     "02",
@@ -45,18 +46,18 @@ const steps = [
 ];
 
 const mentorPaths = [
-  [
-    "Psychologists",
-    "Offer a considered perspective grounded in professional experience.",
-  ],
-  [
-    "Counselors and social workers",
-    "Share supportive, practical guidance within clear professional boundaries.",
-  ],
-  [
-    "Executive coaches",
-    "Help people reflect on work, leadership, and career transitions.",
-  ],
+  {
+    title: "Psychologists",
+    copy: "Offer a considered perspective grounded in professional experience.",
+  },
+  {
+    title: "Counselors and social workers",
+    copy: "Share supportive, practical guidance within clear professional boundaries.",
+  },
+  {
+    title: "Executive coaches",
+    copy: "Help people reflect on work, leadership, and career transitions.",
+  },
 ];
 
 export default function Home() {
@@ -77,7 +78,7 @@ export default function Home() {
             className="button button-small"
             href="/login?mode=signup&amp;role=mentor"
           >
-            Become a mentor <span>↗</span>
+            Become a mentor <UiIcon name="arrow-up-right" />
           </Link>
         </div>
       </header>
@@ -85,7 +86,7 @@ export default function Home() {
         <section className="hero">
           <div className="hero-glow" />
           <div className="eyebrow">
-            <span>✧</span> A MORE THOUGHTFUL SECOND OPINION
+            <UiIcon name="sparkles" /> A MORE THOUGHTFUL SECOND OPINION
           </div>
           <h1>
             A place to share
@@ -93,21 +94,21 @@ export default function Home() {
           </h1>
           <p className="hero-copy">
             Some things are easier to face when you can put them into words.
-            Share a personal or professional struggle under a pseudonym and
-            invite a considered perspective from a credential-reviewed mentor.
+            Share a personal or professional struggle anonymously
+            instead of your real name, and get a perspective from
+            a verified mentor.
           </p>
           <div className="hero-actions">
             <Link className="button" href="/login?mode=signup">
-              Share what’s on your mind <span>→</span>
+              Share what’s on your mind <UiIcon name="arrow-right" />
             </Link>
             <Link className="button button-quiet" href="/feed">
-              Browse reflections <span>→</span>
+              Browse reflections <UiIcon name="arrow-right" />
             </Link>
           </div>
           <div className="trust-row">
-            <span>◉ &nbsp;Pseudonymous public posts</span>
-            <span>✓ &nbsp;Mentors reviewed before responding</span>
-            <span>♡ &nbsp;Moderated before publication</span>
+            <span><UiIcon name="check-badge" /> Mentors reviewed before responding</span>
+            <span><UiIcon name="shield-check" /> Moderated before publication</span>
           </div>
           <section
             className="trust-panel"
@@ -117,7 +118,7 @@ export default function Home() {
               <span>01</span>
               <b>Your email stays private</b>
               <p>
-                Public posts show your community name, not your sign-in email.
+                Public posts show your anonymous name, not your sign-in email.
               </p>
             </article>
             <article>
@@ -142,15 +143,17 @@ export default function Home() {
           <div className="section-kicker">WHAT MAKES THIS DIFFERENT</div>
           <h2>A space designed for care.</h2>
           <p className="section-intro">
-            A quieter way to find perspective—with clear boundaries and people
+            A space to find perspective—with clear boundaries and people
             who take your trust seriously.
           </p>
           <div className="principle-grid">
-            {principles.map(([icon, title, copy]) => (
-              <article className="principle-card" key={title}>
-                <span className="principle-icon">{icon}</span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
+            {principles.map((principle) => (
+              <article className="principle-card" key={principle.title}>
+                <span className="principle-icon">
+                  <UiIcon name={principle.icon} size="md" />
+                </span>
+                <h3>{principle.title}</h3>
+                <p>{principle.copy}</p>
               </article>
             ))}
           </div>
@@ -188,19 +191,21 @@ export default function Home() {
               href="/login?mode=signup&amp;role=mentor"
               className="text-link"
             >
-              Apply to become a mentor ↗
+            Apply to become a mentor <UiIcon name="arrow-up-right" />
             </Link>
           </div>
           <p className="section-intro">
-            Applications are reviewed manually. Mentors can respond only after
+            Applications are reviewed. Mentors can respond only after
             their credentials have been verified.
           </p>
           <div className="mentor-grid">
-            {mentorPaths.map(([title, copy]) => (
-              <article className="mentor-card mentor-path-card" key={title}>
-                <span className="principle-icon">✓</span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
+            {mentorPaths.map((mentor) => (
+              <article className="mentor-card mentor-path-card" key={mentor.title}>
+                <span className="principle-icon">
+                  <UiIcon name="check-badge" size="md" />
+                </span>
+                <h3>{mentor.title}</h3>
+                <p>{mentor.copy}</p>
                 <div className="specialty">Credential review required</div>
               </article>
             ))}
@@ -213,7 +218,7 @@ export default function Home() {
             Sometimes a thoughtful outside perspective is a good first step.
           </p>
           <Link className="button button-light" href="/login?mode=signup">
-            Share what’s on your mind <span>→</span>
+            Share what’s on your mind <UiIcon name="arrow-right" />
           </Link>
         </section>
       </main>

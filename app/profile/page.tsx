@@ -5,6 +5,7 @@ import Link from "next/link";
 import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { createClient } from "@/lib/supabase/client";
+import UiIcon from "../components/ui-icon";
 
 export default function ProfilePage() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -97,7 +98,7 @@ export default function ProfilePage() {
             <h2>Sign in to edit your profile</h2>
             <p>Your profile settings are available after you sign in.</p>
             <Link className="button" href="/login">
-              Sign in <span>→</span>
+              Sign in <UiIcon name="arrow-right" size="sm" />
             </Link>
           </section>
         ) : (
@@ -126,15 +127,15 @@ export default function ProfilePage() {
                 required
               />
               <p className="profile-help">
-                This name is used as the default pseudonym for new reflections.
-                You can still change it in the composer before submitting.
+                This is the name people see on your new reflections. You can
+                change it in the composer before submitting.
               </p>
               <div className="profile-account-row">
                 <span>Account type</span>
                 <b>{role || "Seeker"}</b>
               </div>
               <button className="button" type="submit" disabled={saving}>
-                {saving ? "Saving…" : "Save profile"} <span>→</span>
+                {saving ? "Saving…" : "Save profile"} <UiIcon name="arrow-right" size="sm" />
               </button>
               {notice && (
                 <p className="form-notice" role="status">

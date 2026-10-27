@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import SiteBrand from "../components/site-brand";
 import { createClient } from "@/lib/supabase/server";
+import UiIcon from "../components/ui-icon";
 
 type SearchParams = Promise<{ next?: string }>;
 
@@ -32,22 +33,22 @@ export default async function LoginPage({
           <SiteBrand />
           <div className="story-content">
             <div className="eyebrow">
-              <span>●</span> A SPACE TO SHARE AND REFLECT 
+              <UiIcon name="sparkles" size="xs" /> A SPACE TO SHARE AND REFLECT
             </div>
-            <h1>A thoughtful harbor for life’s complicated moments.</h1>
+            <h1>Share what’s on your mind.</h1>
             <p>
-              Share what is weighing on you and hear considered perspectives
-              from people with experience and care.
+              Share what is weighing on you and hear perspectives
+              from people with experience.
             </p>
             <p className="story-note">
-              Second View is a moderated space for pseudonymous, asynchronous
-              reflection.
+              Second View is a space to share anonymously
+              and receive thoughtful replies over time.
             </p>
           </div>
           <div className="trust-list">
-            <span>✓ &nbsp;Use a pseudonym in the community</span>
-            <span>✓ &nbsp;Mentors are reviewed before responding</span>
-            <span>✓ &nbsp;Your story deserves thoughtful care</span>
+            <span><UiIcon name="check" size="xs" /> Choose the name people see on your post</span>
+            <span><UiIcon name="check" size="xs" /> Mentors are reviewed before responding</span>
+            <span><UiIcon name="check" size="xs" /> Your story deserves thoughtful care</span>
           </div>
         </section>
         <section className="auth-panel">

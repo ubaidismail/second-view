@@ -89,8 +89,8 @@ export default function Home() {
             <UiIcon name="sparkles" /> A MORE THOUGHTFUL SECOND OPINION
           </div>
           <h1>
-            A place to share
-            <br className="desktop-break" /> what weighs on you.
+            Share anonymously.
+            <br className="desktop-break" /> Get a second view.
           </h1>
           <p className="hero-copy">
             Some things are easier to face when you can put them into words.

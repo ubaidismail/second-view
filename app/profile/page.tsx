@@ -6,6 +6,7 @@ import SiteHeader from "../components/site-header";
 import SiteFooter from "../components/site-footer";
 import { createClient } from "@/lib/supabase/client";
 import UiIcon from "../components/ui-icon";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -15,6 +16,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const supabase = createClient();
@@ -22,6 +24,8 @@ export default function ProfilePage() {
     void supabase.auth.getUser().then(async ({ data, error }) => {
       if (!active) return;
       if (error || !data.user) {
+        // redirect to login if not signed in
+        router.replace("/login");
         setLoading(false);
         return;
       }
@@ -96,7 +100,6 @@ export default function ProfilePage() {
         ) : !userId ? (
           <section className="surface-card seeker-profile-card">
             <h2>Sign in to edit your profile</h2>
-            <p>Your profile settings are available after you sign in.</p>
             <Link className="button" href="/login">
               Sign in <UiIcon name="arrow-right" size="sm" />
             </Link>

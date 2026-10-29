@@ -7,6 +7,7 @@ import SiteFooter from "../components/site-footer";
 import { createClient } from "@/lib/supabase/client";
 import { createMentorApplicationAction } from "./actions";
 import UiIcon from "../components/ui-icon";
+import { useRouter } from "next/navigation";
 
 const focusAreas = [
   "Career transitions",
@@ -20,6 +21,8 @@ const focusAreas = [
 const maxFileBytes = 10 * 1024 * 1024;
 
 export default function MentorApplyPage() {
+  const router = useRouter();
+
   const [selectedFocus, setSelectedFocus] = useState<string[]>([
     "Career transitions",
   ]);
@@ -56,6 +59,7 @@ export default function MentorApplyPage() {
   useEffect(() => {
     if (!userId) {
       setApplicationStatus(null);
+      router.replace("/login?mode=signup&role=mentor");
       return;
     }
     let active = true;
@@ -108,8 +112,7 @@ export default function MentorApplyPage() {
     const supabase = createClient();
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData.user) {
-      setSubmitting(false);
-      setNotice("Sign in before submitting a mentor application.");
+      router.replace("/login?mode=signup&role=mentor");
       return;
     }
 
@@ -201,10 +204,7 @@ export default function MentorApplyPage() {
               </div>
             ) : !userId ? (
               <div className="sign-in-gate">
-                <p>
-                  Sign in before sending professional details or credential
-                  documents.
-                </p>
+                
                 <Link
                   className="button"
                   href="/login?mode=signup&amp;role=mentor"

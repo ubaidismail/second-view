@@ -142,7 +142,7 @@ input {
   position: relative;
   overflow: hidden;
   text-align: center;
-  padding: 72px 24px 78px;
+  padding: 72px 100px 78px;
 }
 .hero-glow {
   position: absolute;
@@ -219,6 +219,7 @@ input {
   max-width: 870px;
   margin: auto;
 }
+
 .reply-actions { display: flex; gap: 0.75rem; }
 .reply-edited { opacity: 0.7; }
 .spinner {
@@ -1929,6 +1930,97 @@ input {
 .header-actions .button {
   color: #fff;
 }
+
+/* hero feed */
+/* Hero two-column layout */
+.hero-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+}
+@media (min-width: 960px) {
+  .hero-layout {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 3rem;
+  }
+}
+/* Left-align the text now that it sits beside the preview */
+.hero-content { text-align: left; }
+.hero-content .hero-copy { margin-left: 0; margin-right: 0; }
+.hero-content .hero-actions,
+.hero-content .trust-row { justify-content: flex-start; }
+
+/* Vertical auto-scrolling preview */
+.feed-preview {
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 14%, #000 86%, transparent);
+}
+@media (min-width: 960px) {
+  .feed-preview { height: 520px; }
+}
+.feed-preview-track {
+  display: flex;
+  flex-direction: column;
+  animation: feed-preview-scroll 50s linear infinite;
+  will-change: transform;
+}
+.feed-preview:hover .feed-preview-track { animation-play-state: paused; }
+
+@keyframes feed-preview-scroll {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+.feed-preview-item { padding-bottom: 1rem; }
+.feed-preview-card { padding: 1.1rem 1.25rem; text-align: left; }
+.feed-preview-card h3 { margin: 0.75rem 0 0.35rem; font-size: 1.05rem; }
+.feed-preview-card p { margin: 0; font-size: 0.92rem; opacity: 0.85; }
+
+.feed-preview-meta { display: flex; align-items: center; gap: 0.65rem; }
+.feed-preview-meta small { display: block; opacity: 0.65; }
+.feed-preview-avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(128, 128, 128, 0.18);
+  font-weight: 600;
+}
+
+.feed-preview-reply {
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.85rem;
+  border-left: 2px solid rgba(128, 128, 128, 0.35);
+  border-radius: 0 0.5rem 0.5rem 0;
+  background: rgba(128, 128, 128, 0.08);
+}
+.feed-preview-reply span {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.feed-preview-caption {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* Respect users who turn animations off */
+@media (prefers-reduced-motion: reduce) {
+  .feed-preview-track { animation: none; }
+}
+/* hero feed */
 @media (max-width: 1000px) {
   .feed-layout {
     grid-template-columns: 190px minmax(380px, 1fr);

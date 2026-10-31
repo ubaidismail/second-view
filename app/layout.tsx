@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Share anonymously. Get a second view.",
   description:
     "Share what is weighing on you using a community name instead of your real name. Reflections are moderated, and mentor credentials are reviewed before responses.",
+    icons: {
+      icon: "/favicon.ico",
+    },
 };
 
 export default function RootLayout({

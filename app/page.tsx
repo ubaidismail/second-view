@@ -3,6 +3,7 @@ import ModerationNotice from "./components/moderation-notice";
 import SiteBrand from "./components/site-brand";
 import SiteFooter from "./components/site-footer";
 import UiIcon from "./components/ui-icon";
+import FeedPreview from "./components/feed-preview";
 
 const principles = [
   {
@@ -83,33 +84,39 @@ export default function Home() {
         </div>
       </header>
       <main>
+
         <section className="hero">
           <div className="hero-glow" />
-          <div className="eyebrow">
-            <UiIcon name="sparkles" /> A MORE THOUGHTFUL SECOND OPINION
+          <div className="hero-layout">
+            <div className="hero-content">
+              
+              <h1>
+                Share anonymously.
+                <br className="desktop-break" /> Get a second view.
+              </h1>
+              <p className="hero-copy">
+                Some things are easier to face when you can put them into words.
+                Share a personal or professional struggle anonymously
+                instead of your real name, and get a perspective from
+                a verified mentor.
+              </p>
+              <div className="hero-actions">
+                <Link className="button" href="/login?mode=signup">
+                  Share what’s on your mind <UiIcon name="arrow-right" />
+                </Link>
+                <Link className="button button-quiet" href="/feed">
+                  Browse reflections <UiIcon name="arrow-right" />
+                </Link>
+              </div>
+              <div className="trust-row">
+                <span><UiIcon name="shield-check" /> Moderated before publication</span>
+              </div>
+            </div>
+
+            <FeedPreview />
           </div>
-          <h1>
-            Share anonymously.
-            <br className="desktop-break" /> Get a second view.
-          </h1>
-          <p className="hero-copy">
-            Some things are easier to face when you can put them into words.
-            Share a personal or professional struggle anonymously
-            instead of your real name, and get a perspective from
-            a verified mentor.
-          </p>
-          <div className="hero-actions">
-            <Link className="button" href="/login?mode=signup">
-              Share what’s on your mind <UiIcon name="arrow-right" />
-            </Link>
-            <Link className="button button-quiet" href="/feed">
-              Browse reflections <UiIcon name="arrow-right" />
-            </Link>
-          </div>
-          <div className="trust-row">
-            <span><UiIcon name="check-badge" /> Mentors reviewed before responding</span>
-            <span><UiIcon name="shield-check" /> Moderated before publication</span>
-          </div>
+
+
           <section
             className="trust-panel"
             aria-label="How Second View protects the community"
@@ -139,6 +146,8 @@ export default function Home() {
             </article>
           </section>
         </section>
+
+
         <section className="section principles" id="how-it-works">
           <div className="section-kicker">WHAT MAKES THIS DIFFERENT</div>
           <h2>A space designed for care.</h2>
@@ -191,7 +200,7 @@ export default function Home() {
               href="/login?mode=signup&amp;role=mentor"
               className="text-link"
             >
-            Apply to become a mentor <UiIcon name="arrow-up-right" />
+              Apply to become a mentor <UiIcon name="arrow-up-right" />
             </Link>
           </div>
           <p className="section-intro">
